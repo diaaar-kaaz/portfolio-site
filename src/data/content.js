@@ -11,9 +11,8 @@ export const SITE = {
   name: 'Diar Kazbekov',
   logo: 'DK',
   email: 'dkazzzbekov@gmail.com',
-  // TODO: подставь свои ники вместо заглушек
-  telegram: 'https://t.me/yourusername',
-  instagram: 'https://instagram.com/yourusername',
+  telegram: 'https://t.me/tekikashi',
+  instagram: 'https://instagram.com/diarkazbekov',
 }
 
 export const PROJECTS = [
@@ -27,8 +26,8 @@ export const PROJECTS = [
       ru: 'Платформа лояльности для сети кофеен: QR-штамп-карты на кофе и десерты, награды, личные кабинеты и админ-панель для персонала.',
     },
     tags: ['Next.js 14', 'Supabase', 'Tailwind CSS'],
-    image: null, // '/works/aromat-web.png'
-    link: null, // 'https://...'
+    image: '/works/aromat-web.png',
+    link: 'https://aromat-loyalty.vercel.app',
     cover: { from: '#2a1a0f', to: '#0d0906', glow: '#d4a574', emblem: 'A' },
   },
   {
@@ -55,8 +54,8 @@ export const PROJECTS = [
       ru: 'Драйвовый лендинг киберспортивного турнира: живой счётчик мест, регистрация с экраном успеха, эффекты частиц и призовой фонд.',
     },
     tags: ['React 19', 'Framer Motion', 'Vite'],
-    image: null, // '/works/evoclub.png'
-    link: null,
+    image: '/works/evoclub.png',
+    link: 'https://evoclub-tournament.vercel.app',
     cover: { from: '#26100e', to: '#0d0706', glow: '#ff6b4a', emblem: 'E' },
   },
 ]
