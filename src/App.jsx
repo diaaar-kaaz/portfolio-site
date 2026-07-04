@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Lenis from 'lenis'
+import { EASE, EASE_INOUT, DURATION } from './gsap-config.js'
 import {
   Menu, X, ArrowUpRight, ArrowDown, Mail, Send, Camera,
   Atom, Smartphone, Database, Braces, Wind, Server, Sparkles, Rocket,
@@ -11,6 +13,151 @@ import { SITE, PROJECTS } from './data/content.js'
 gsap.registerPlugin(ScrollTrigger)
 
 /* ---------- helpers ---------- */
+
+const SCRAMBLE_CHARS = '!<>-_\\/[]{}=+*^?#$%&@abcdef0123456789'
+
+// Декодирует текст слева направо из случайных символов.
+// Возвращает функцию отмены.
+function scrambleTo(el, text, { duration = 1000, delay = 0 } = {}) {
+  let frame
+  let start
+  const step = (t) => {
+    if (!start) start = t
+    const p = Math.min((t - start) / duration, 1)
+    const reveal = Math.floor(p * text.length)
+    let out = ''
+    for (let i = 0; i < text.length; i++) {
+      out += i < reveal ? text[i] : SCRAMBLE_CHARS[(Math.random() * SCRAMBLE_CHARS.length) | 0]
+    }
+    el.textContent = p < 1 ? out : text
+    if (p < 1) frame = requestAnimationFrame(step)
+  }
+  const id = setTimeout(() => {
+    frame = requestAnimationFrame(step)
+  }, delay)
+  return () => {
+    clearTimeout(id)
+    cancelAnimationFrame(frame)
+    el.textContent = text
+  }
+}
+
+function Preloader({ onReveal, onDone }) {
+  const rootRef = useRef(null)
+  const limeRef = useRef(null)
+  const darkRef = useRef(null)
+  const countRef = useRef(null)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      onReveal()
+      onDone()
+      return
+    }
+    const start = performance.now()
+    let progress = 0
+    const interval = setInterval(() => {
+      progress = Math.min(progress + Math.random() * 13, 100)
+      const elapsed = performance.now() - start
+      const shown = elapsed < 1500 ? Math.min(progress, 99) : progress
+      if (countRef.current) countRef.current.textContent = String(Math.floor(shown)).padStart(3, '0')
+      if (progress >= 100 && elapsed >= 1500) {
+        clearInterval(interval)
+        const tl = gsap.timeline({ onComplete: onDone })
+        tl.to(rootRef.current.querySelectorAll('.loader-content'), {
+          opacity: 0, y: -20, duration: DURATION.fast, ease: 'power2.in',
+        })
+          .to(darkRef.current, { yPercent: -100, duration: 0.85, ease: EASE_INOUT }, 0.1)
+          .to(limeRef.current, { yPercent: -100, duration: 0.85, ease: EASE_INOUT }, 0.3)
+          .call(onReveal, [], 0.35)
+      }
+    }, 90)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div ref={rootRef} className="fixed inset-0 z-[100]">
+      <div ref={limeRef} className="absolute inset-0 bg-lime-500" />
+      <div ref={darkRef} className="absolute inset-0 flex flex-col bg-ink-950 p-8 sm:p-12">
+        <div className="loader-content flex flex-1 flex-col items-center justify-center">
+          <span className="font-mono text-2xl text-mist-100">
+            {SITE.logo}<span className="text-lime-500">.</span>
+          </span>
+          <span className="mt-3 font-mono text-[11px] uppercase tracking-widest2 text-mist-500">
+            portfolio
+          </span>
+        </div>
+        <div className="loader-content flex items-end justify-between">
+          <span className="mb-3 font-mono text-[11px] uppercase tracking-widest2 text-mist-500">loading</span>
+          <span ref={countRef} className="font-display text-7xl font-extrabold tracking-tighter text-lime-500 sm:text-8xl">
+            000
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Cursor() {
+  const [enabled, setEnabled] = useState(false)
+  const dotRef = useRef(null)
+  const ringRef = useRef(null)
+
+  useEffect(() => {
+    if (window.matchMedia('(pointer: fine)').matches) setEnabled(true)
+  }, [])
+
+  useEffect(() => {
+    if (!enabled) return
+    document.documentElement.classList.add('cursor-custom')
+    gsap.set([dotRef.current, ringRef.current], { xPercent: -50, yPercent: -50, x: -100, y: -100 })
+
+    const dotX = gsap.quickTo(dotRef.current, 'x', { duration: 0.12, ease: EASE })
+    const dotY = gsap.quickTo(dotRef.current, 'y', { duration: 0.12, ease: EASE })
+    const ringX = gsap.quickTo(ringRef.current, 'x', { duration: 0.45, ease: EASE })
+    const ringY = gsap.quickTo(ringRef.current, 'y', { duration: 0.45, ease: EASE })
+
+    const move = (e) => {
+      dotX(e.clientX); dotY(e.clientY)
+      ringX(e.clientX); ringY(e.clientY)
+    }
+    const over = (e) => {
+      if (e.target.closest('a, button')) {
+        gsap.to(ringRef.current, { scale: 1.8, opacity: 0.45, duration: DURATION.fast, ease: EASE })
+        gsap.to(dotRef.current, { scale: 0.5, duration: DURATION.fast, ease: EASE })
+      }
+    }
+    const out = (e) => {
+      if (e.target.closest('a, button')) {
+        gsap.to(ringRef.current, { scale: 1, opacity: 1, duration: DURATION.fast, ease: EASE })
+        gsap.to(dotRef.current, { scale: 1, duration: DURATION.fast, ease: EASE })
+      }
+    }
+    window.addEventListener('mousemove', move, { passive: true })
+    document.addEventListener('mouseover', over)
+    document.addEventListener('mouseout', out)
+    return () => {
+      document.documentElement.classList.remove('cursor-custom')
+      window.removeEventListener('mousemove', move)
+      document.removeEventListener('mouseover', over)
+      document.removeEventListener('mouseout', out)
+    }
+  }, [enabled])
+
+  if (!enabled) return null
+  return (
+    <>
+      <div
+        ref={ringRef}
+        className="pointer-events-none fixed left-0 top-0 z-[130] h-9 w-9 rounded-full border border-lime-500/70 mix-blend-difference will-change-transform"
+      />
+      <div
+        ref={dotRef}
+        className="pointer-events-none fixed left-0 top-0 z-[130] h-2 w-2 rounded-full bg-lime-500 mix-blend-difference will-change-transform"
+      />
+    </>
+  )
+}
 
 function SectionHeader({ index, label, title, accent }) {
   return (
@@ -173,21 +320,29 @@ function Navbar() {
   )
 }
 
-function Hero() {
+function Hero({ ready }) {
   const { t, lang } = useLang()
   const ref = useRef(null)
+  const line1Ref = useRef(null)
+  const line2Ref = useRef(null)
   const [first, last] = SITE.name.split(' ')
 
   useEffect(() => {
+    if (!ready) return
     const ctx = gsap.context(() => {
-      gsap.from('.hero-line-1', { y: 60, opacity: 0, duration: 1.1, delay: 0.25, ease: 'power3.out' })
-      gsap.from('.hero-line-2', { y: 70, opacity: 0, duration: 1.2, delay: 0.45, ease: 'power3.out' })
+      gsap.from('.hero-line-1, .hero-line-2', { opacity: 0, duration: 0.4, ease: EASE })
       gsap.from('.hero-meta, .hero-cta, .hero-scroll', {
-        y: 24, opacity: 0, duration: 0.8, delay: 0.75, stagger: 0.12, ease: 'power3.out',
+        y: 24, opacity: 0, duration: 0.8, delay: 0.55, stagger: 0.12, ease: EASE,
       })
     }, ref)
-    return () => ctx.revert()
-  }, [])
+    const cancel1 = scrambleTo(line1Ref.current, first, { duration: 900, delay: 200 })
+    const cancel2 = scrambleTo(line2Ref.current, last, { duration: 1100, delay: 450 })
+    return () => {
+      ctx.revert()
+      cancel1()
+      cancel2()
+    }
+  }, [ready])
 
   const particles = [
     { txt: '{ }', top: '18%', right: '12%', size: 'text-xl', color: 'text-lime-400/70', delay: '0s', r: '-8deg' },
@@ -230,9 +385,9 @@ function Hero() {
         </div>
 
         <h1 className="font-display text-6xl font-extrabold leading-[0.92] tracking-tighter text-mist-100 sm:text-8xl lg:text-9xl">
-          <span className="hero-line-1 block">{first}</span>
+          <span className="hero-line-1 block"><span ref={line1Ref}>{first}</span></span>
           <span className="hero-line-2 block font-serif font-medium italic gradient-text pr-2">
-            {last}<span className="caret-blink font-display not-italic text-lime-500">_</span>
+            <span ref={line2Ref}>{last}</span><span className="caret-blink font-display not-italic text-lime-500">_</span>
           </span>
         </h1>
 
@@ -607,6 +762,38 @@ function Footer() {
 
 export default function App() {
   const { lang } = useLang()
+  const [booted, setBooted] = useState(false)
+  const [showLoader, setShowLoader] = useState(true)
+  const lenisRef = useRef(null)
+
+  useEffect(() => {
+    const lenis = new Lenis({ duration: DURATION.slow })
+    lenisRef.current = lenis
+    lenis.stop()
+    lenis.on('scroll', ScrollTrigger.update)
+    const raf = (time) => lenis.raf(time * 1000)
+    gsap.ticker.add(raf)
+    gsap.ticker.lagSmoothing(0)
+
+    const onClick = (e) => {
+      const a = e.target.closest('a[href^="#"]')
+      if (!a) return
+      const el = document.querySelector(a.getAttribute('href'))
+      if (!el) return
+      e.preventDefault()
+      lenis.scrollTo(el, { offset: -80 })
+    }
+    document.addEventListener('click', onClick)
+    return () => {
+      document.removeEventListener('click', onClick)
+      gsap.ticker.remove(raf)
+      lenis.destroy()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (booted) lenisRef.current?.start()
+  }, [booted])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -615,7 +802,7 @@ export default function App() {
           y: 36,
           opacity: 0,
           duration: 0.9,
-          ease: 'power3.out',
+          ease: EASE,
           scrollTrigger: { trigger: el, start: 'top 86%', once: true },
         })
       })
@@ -634,10 +821,12 @@ export default function App() {
 
   return (
     <div className="relative">
+      {showLoader && <Preloader onReveal={() => setBooted(true)} onDone={() => setShowLoader(false)} />}
+      <Cursor />
       <div className="noise-overlay" />
       <Navbar />
       <main>
-        <Hero />
+        <Hero ready={booted} />
         <Works />
         <About />
         <Stack />

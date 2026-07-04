@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   body { @apply bg-ink-950 text-mist-300 font-body; overflow-x: hidden; }
   ::selection { background-color: #c6f52d; color: #0a0a10; }
   ::-webkit-scrollbar { width: 10px; }
@@ -73,4 +73,9 @@
 @layer utilities {
   .perspective { perspective: 1200px; }
   .preserve-3d { transform-style: preserve-3d; }
+}
+
+/* кастомный курсор: прячем системный только на точных указателях */
+@media (pointer: fine) {
+  html.cursor-custom, html.cursor-custom * { cursor: none !important; }
 }
