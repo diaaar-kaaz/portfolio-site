@@ -6,6 +6,7 @@ import { EASE, EASE_INOUT, DURATION } from './gsap-config.js'
 import {
   Menu, X, ArrowUpRight, ArrowDown, Mail, Send, Camera,
   Atom, Smartphone, Database, Braces, Wind, Server, Sparkles, Rocket,
+  Globe, Heart, QrCode, Bot, CalendarCheck, ShoppingCart, Gift, LifeBuoy,
 } from 'lucide-react'
 import { useLang } from './i18n.jsx'
 import { SITE, PROJECTS } from './data/content.js'
@@ -244,6 +245,7 @@ function Navbar() {
 
   const links = [
     { label: t.nav.works, href: '#works' },
+    { label: t.nav.services, href: '#services' },
     { label: t.nav.about, href: '#about' },
     { label: t.nav.stack, href: '#stack' },
     { label: t.nav.process, href: '#process' },
@@ -521,13 +523,44 @@ function Works() {
   )
 }
 
+function Services() {
+  const { t } = useLang()
+  const icons = [Globe, Heart, QrCode, Bot, CalendarCheck, ShoppingCart, Gift, LifeBuoy]
+
+  return (
+    <section id="services" className="relative border-y border-white/[0.06] bg-ink-900/50">
+      <div className="mx-auto max-w-7xl px-6 py-28 sm:px-10 lg:px-16 lg:py-36">
+        <SectionHeader index="02" label={t.services.label} title={t.services.title} accent={t.services.titleAccent} />
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {t.services.items.map((s, i) => {
+            const Icon = icons[i]
+            return (
+              <div
+                key={s.title}
+                data-reveal
+                className="group rounded-2xl border border-white/[0.07] bg-ink-900 p-6 transition-colors duration-300 hover:border-lime-500/40 sm:p-7"
+              >
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
+                  <Icon className="h-5 w-5 text-lime-400 transition-colors group-hover:text-neon-400" />
+                </div>
+                <h3 className="mt-5 font-display text-base font-bold text-mist-100">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-mist-500">{s.text}</p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 function About() {
   const { t } = useLang()
   return (
-    <section id="about" className="relative border-y border-white/[0.06] bg-ink-900/50">
+    <section id="about" className="relative">
       <div className="mx-auto grid max-w-7xl gap-14 px-6 py-28 sm:px-10 lg:grid-cols-2 lg:gap-20 lg:px-16 lg:py-36">
         <div>
-          <SectionHeader index="02" label={t.about.label} title={t.about.title} accent={t.about.titleAccent} />
+          <SectionHeader index="03" label={t.about.label} title={t.about.title} accent={t.about.titleAccent} />
           <div data-reveal className="mt-8 space-y-5 text-base leading-relaxed text-mist-400 sm:text-lg">
             <p>{t.about.bio1}</p>
             <p>{t.about.bio2}</p>
@@ -570,7 +603,7 @@ function Stack() {
 
   return (
     <section id="stack" className="mx-auto max-w-7xl px-6 py-28 sm:px-10 lg:px-16 lg:py-36">
-      <SectionHeader index="03" label={t.stack.label} title={t.stack.title} accent={t.stack.titleAccent} />
+      <SectionHeader index="04" label={t.stack.label} title={t.stack.title} accent={t.stack.titleAccent} />
       <div
         data-reveal
         className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.07] sm:grid-cols-2 lg:grid-cols-4"
@@ -619,7 +652,7 @@ function Process() {
   return (
     <section id="process" ref={ref} className="border-y border-white/[0.06] bg-ink-900/50">
       <div className="mx-auto max-w-5xl px-6 py-28 sm:px-10 lg:px-16 lg:py-36">
-        <SectionHeader index="04" label={t.process.label} title={t.process.title} accent={t.process.titleAccent} />
+        <SectionHeader index="05" label={t.process.label} title={t.process.title} accent={t.process.titleAccent} />
 
         <div className="mt-16 flex flex-col gap-8">
           {t.process.steps.map((s, i) => (
@@ -656,7 +689,7 @@ function Contact() {
       <div className="absolute left-1/2 top-1/2 h-[560px] w-[560px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lime-600/15 blur-[160px]" />
       <div className="relative mx-auto max-w-4xl px-6 py-32 text-center sm:px-10 lg:py-44">
         <p data-reveal className="font-mono text-xs uppercase tracking-widest2 text-lime-400">
-          /05 — {t.contact.label}
+          /06 — {t.contact.label}
         </p>
         <h2
           data-reveal
@@ -702,6 +735,7 @@ function Footer() {
   const { t } = useLang()
   const links = [
     { label: t.nav.works, href: '#works' },
+    { label: t.nav.services, href: '#services' },
     { label: t.nav.about, href: '#about' },
     { label: t.nav.stack, href: '#stack' },
     { label: t.nav.process, href: '#process' },
@@ -828,6 +862,7 @@ export default function App() {
       <main>
         <Hero ready={booted} />
         <Works />
+        <Services />
         <About />
         <Stack />
         <Process />

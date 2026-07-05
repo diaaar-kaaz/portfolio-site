@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const translations = {
   en: {
-    nav: { works: 'Works', about: 'About', stack: 'Stack', process: 'Process', contact: 'Contact' },
+    nav: { works: 'Works', services: 'Services', about: 'About', stack: 'Stack', process: 'Process', contact: 'Contact' },
     hero: {
       meta: 'Full-stack developer · Web & iOS',
       sub: 'Full-stack developer crafting web apps, native iOS apps and high-converting landing pages — from the first sketch to production.',
@@ -17,6 +17,21 @@ const translations = {
       titleAccent: 'projects.',
       soon: 'Case study coming soon',
       visit: 'Open project',
+    },
+    services: {
+      label: 'What I build',
+      title: 'Services &',
+      titleAccent: 'products.',
+      items: [
+        { title: 'Websites & landing pages', text: 'Studio-grade marketing sites and landing pages that convert visitors into clients.' },
+        { title: 'Event & wedding invites', text: 'Beautiful invitation sites: RSVP forms, countdown, map, photo gallery.' },
+        { title: 'QR menus', text: 'Digital menus for cafés and restaurants: photos, categories, multiple languages.' },
+        { title: 'Telegram & WhatsApp bots', text: 'Booking, order and notification bots that work while you sleep.' },
+        { title: 'Online booking', text: 'Appointment widget with client reminders and a calendar for the owner.' },
+        { title: 'Online stores', text: 'E-commerce with cart and local payment integrations like Kaspi Pay.' },
+        { title: 'Loyalty programs', text: 'Stamp cards, QR and rewards — web + iOS, like the Aromat coffee chain platform.' },
+        { title: 'Care & support plans', text: 'Monthly subscription: edits, updates and backups — your site just works.' },
+      ],
     },
     about: {
       label: 'About me',
@@ -85,7 +100,7 @@ const translations = {
   },
 
   ru: {
-    nav: { works: 'Работы', about: 'Обо мне', stack: 'Стек', process: 'Процесс', contact: 'Контакты' },
+    nav: { works: 'Работы', services: 'Услуги', about: 'Обо мне', stack: 'Стек', process: 'Процесс', contact: 'Контакты' },
     hero: {
       meta: 'Full-stack разработчик · Web и iOS',
       sub: 'Full-stack разработчик: веб-приложения, нативные iOS-приложения и продающие лендинги — от первого макета до продакшена.',
@@ -100,6 +115,21 @@ const translations = {
       titleAccent: 'проекты.',
       soon: 'Кейс скоро появится',
       visit: 'Открыть проект',
+    },
+    services: {
+      label: 'Что я делаю',
+      title: 'Услуги и',
+      titleAccent: 'продукты.',
+      items: [
+        { title: 'Сайты и лендинги', text: 'Продающие лендинги и сайты с дизайном уровня студий — превращают посетителей в клиентов.' },
+        { title: 'Той-сайты и приглашения', text: 'Сайты-приглашения на свадьбу и той: RSVP-форма, обратный отсчёт, карта, галерея.' },
+        { title: 'QR-меню', text: 'Электронное меню для кафе и ресторанов: фото, категории, русский и казахский.' },
+        { title: 'Telegram и WhatsApp боты', text: 'Боты записи, заказов и уведомлений — работают, пока вы спите.' },
+        { title: 'Онлайн-запись', text: 'Виджет бронирования с напоминаниями клиентам и календарём для владельца.' },
+        { title: 'Интернет-магазины', text: 'Витрина, корзина и оплата через Kaspi Pay — покупают, как привыкли.' },
+        { title: 'Программы лояльности', text: 'Штамп-карты, QR и награды — web + iOS, как платформа для сети кофеен Aromat.' },
+        { title: 'Поддержка по подписке', text: 'Фикс в месяц: правки, обновления, бэкапы — сайт просто работает.' },
+      ],
     },
     about: {
       label: 'Обо мне',
